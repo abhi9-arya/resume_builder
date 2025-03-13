@@ -1,4 +1,3 @@
-import { error } from "console";
 import exp from "constants";
 
 // ErrorHandler class definition

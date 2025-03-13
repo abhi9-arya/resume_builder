@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-import { type } from "os";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+
 const userSchema = mongoose.Schema({
   email: {
     type: String,
