@@ -53,64 +53,65 @@ const SignUp = () => {
   };
 
   return (
-    <div className="relative w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 overflow-hidden">
-      {/* SignUp Card */}
-      <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-2xl shadow-lg border border-white/10 hover:shadow-2xl transition-shadow duration-300 z-10">
-        <h2 className="text-3xl font-bold text-center text-white mb-6">
-          Create an Account
-        </h2>
-        <form onSubmit={collectData} className="space-y-4">
-          <div>
-            <input
-              type="email"
-              name="email"
-              value={user.email}
-              onChange={handleChange}
-              placeholder="Email"
-              required
-              className="w-full p-3 bg-gray-800 text-white placeholder-gray-400 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              name="password"
-              value={user.password}
-              onChange={handleChange}
-              placeholder="Password"
-              required
-              className="w-full p-3 bg-gray-800 text-white placeholder-gray-400 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              name="confirmationpassword"
-              value={user.confirmationpassword}
-              onChange={handleChange}
-              placeholder="Confirm Password"
-              required
-              className="w-full p-3 bg-gray-800 text-white placeholder-gray-400 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-            />
-          </div>
-          <div className="flex justify-center">
+    // Fixed positioning for full-screen background
+    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
+      {/* SignUp Card with fixed width to match login page */}
+      <div className="w-80 bg-gray-800 rounded-lg shadow-lg">
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-center text-white mb-6">
+            Create an Account
+          </h2>
+          <form onSubmit={collectData} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                name="email"
+                value={user.email}
+                onChange={handleChange}
+                placeholder="Email"
+                required
+                className="w-full p-3 bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                name="password"
+                value={user.password}
+                onChange={handleChange}
+                placeholder="Password"
+                required
+                className="w-full p-3 bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                name="confirmationpassword"
+                value={user.confirmationpassword}
+                onChange={handleChange}
+                placeholder="Confirm Password"
+                required
+                className="w-full p-3 bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
             <button
               type="submit"
-              className="w-full py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full py-3 bg-green-600 text-white font-medium rounded hover:bg-green-700 transition-colors"
             >
               Sign Up
             </button>
-          </div>
-        </form>
-        <p className="text-center text-sm text-gray-900 mt-4">
-          Already have an account?{" "}
-          <a
-            href="/"
-            className="underline text-blue-800 hover:text-blue-500 transition-all duration-300"
-          >
-            Login here
-          </a>
-        </p>
+          </form>
+          <p className="text-center text-sm text-gray-400 mt-4">
+            Already have an account?{" "}
+            <a
+              href="/"
+              className="text-blue-400 hover:text-blue-300"
+            >
+              Login here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

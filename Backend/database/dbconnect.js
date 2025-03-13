@@ -2,9 +2,8 @@ import mongoose from "mongoose";
 
 const dbconnect = () => {
   return mongoose
-    .connect("mongodb://127.0.0.1:27017/resumebuilder", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    .connect("mongodb+srv://abhi:abhi1234@cluster1.yutit.mongodb.net/resumebuilder", {
+     
     })
     .then(() => console.log("MongoDB connected successfully"))
     .catch((error) => {
