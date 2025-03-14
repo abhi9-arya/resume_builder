@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { login, clearAllUserError } from "@/Store/UserSlice"; // JWT Auth Actions
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,20 +11,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { login, clearAllUserError } from "@/Store/UserSlice";
-import { toast } from "react-toastify";
-import SpecialLoadingButton from "./sub-component/SpeicalLoadingButton";
-const Login = ({ className, ...props }) => {
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
-  });
 
+// Firebase Imports
+import { auth } from "../firebase/firebase.js";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
+const Login = () => {
+  const [user, setUser] = useState({ email: "", password: "" });
   const { loading, isAuthenticated, error } = useSelector(
     (state) => state.user
   );
@@ -29,8 +27,21 @@ const Login = ({ className, ...props }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  // 🔹 Handle JWT Email/Password Login
+  const handleJWTLogin = () => {
     dispatch(login(user.email, user.password));
+  };
+
+  // 🔹 Handle Google Login (Firebase)
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      toast.success(`Welcome ${result.user.displayName}!`);
+      navigate("/home");
+    } catch (error) {
+      toast.error("Google sign-in failed");
+    }
   };
 
   useEffect(() => {
@@ -44,131 +55,91 @@ const Login = ({ className, ...props }) => {
   }, [dispatch, isAuthenticated, error, navigate]);
 
   return (
-    <div className="relative w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-      <div
-        className={cn("flex flex-col gap-6 w-full max-w-sm mx-auto", className)}
-        {...props}
-      >
-        <Card className="w-full p-6 bg-white/10 backdrop-blur-md rounded-2xl shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-3xl font-bold text-white text-center">
-              Welcome Back
-            </CardTitle>
-            <CardDescription className="text-center text-gray-900">
-              Login with your Apple or Google account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form
-              className="space-y-6"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleLogin();
-              }}
+    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
+      <Card className="w-full max-w-md p-6 bg-white/10 backdrop-blur-md rounded-2xl shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-3xl font-bold text-white text-center">
+            Welcome Back
+          </CardTitle>
+          <CardDescription className="text-center text-gray-400">
+            Login with your Google or Email + Password
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Google Authentication */}
+            <Button
+              onClick={handleGoogleLogin}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white"
             >
-              <div className="space-y-4">
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white"
-                >
-                  🍏 Login with Apple
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white"
-                >
-                  🔵 Login with Google
-                </Button>
-              </div>
+              🔵 Login with Google
+            </Button>
+          </div>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-500" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-gray-900 px-2 text-gray-400">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    className="bg-gray-800 text-white placeholder-gray-400 border-gray-600"
-                    value={user.email}
-                    onChange={(e) =>
-                      setUser({ ...user, email: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white">
-                    Password
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Your password"
-                    className="bg-gray-800 text-white placeholder-gray-400 border-gray-600"
-                    value={user.password}
-                    onChange={(e) =>
-                      setUser({ ...user, password: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                {loading ? (
-                  <SpecialLoadingButton content={"Logging In"} />
-                ) : (
-                  <Button
-                    type="submit"
-                    className="w-full bg-green-500 text-white hover:bg-green-600 transition-all duration-300"
-                  >
-                    Login
-                  </Button>
-                )}
-              </div>
-            </form>
-
-            <div className="mt-4 text-center text-sm text-gray-900">
-              Don’t have an account?{" "}
-              <a
-                href="/signup"
-                className="underline underline-offset-4 text-blue-400 hover:text-blue-500 transition-all"
-              >
-                Sign up
-              </a>
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-500"></div>
             </div>
-            <br />
-            <p className="text-center text-sm text-gray-900">
-              By clicking continue, you agree to our{" "}
-              <a
-                href="#"
-                className="underline text-gray-900 hover:text-gray-400"
-              >
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a
-                href="#"
-                className="underline text-gray-900 hover:text-gray-400"
-              >
-                Privacy Policy
-              </a>
-            </p>
-          </CardContent>
-        </Card>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-gray-900 px-2 text-gray-400">Or</span>
+            </div>
+          </div>
 
-        {/* <Novatrix /> */}
-      </div>
+          {/* JWT Authentication Form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleJWTLogin();
+            }}
+            className="space-y-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-white">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                className="bg-gray-800 text-white placeholder-gray-400 border-gray-600"
+                value={user.email}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-white">
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Your password"
+                className="bg-gray-800 text-white placeholder-gray-400 border-gray-600"
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-green-500 text-white hover:bg-green-600 transition-all duration-300"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
+
+          <p className="mt-4 text-center text-sm text-gray-400">
+            Don't have an account?{" "}
+            <a href="/signup" className="text-blue-400 hover:text-blue-300">
+              Sign up
+            </a>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };
